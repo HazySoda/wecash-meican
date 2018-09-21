@@ -24,23 +24,33 @@ class App extends Component {
     ],
     window: {
       backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#fff',
+      navigationBarBackgroundColor: '#628add',
       navigationBarTitleText: 'WeChat',
-      navigationBarTextStyle: 'black'
+      navigationBarTextStyle: 'white'
     },
     tabBar: {
+      color: '#8a8a8a',
+      selectedColor: '#628add',
+      backgroundColor: '#fff',
+      borderStyle: 'black',
       list: [
         {
           pagePath: 'pages/ShopList/index',
-          text: '首页'
+          text: '首页',
+          iconPath: 'assets/icons/list.png',
+          selectedIconPath: 'assets/icons/list-active.png'
         },
         {
           pagePath: 'pages/Rating/index',
-          text: '排行'
+          text: '排行',
+          iconPath: 'assets/icons/rate.png',
+          selectedIconPath: 'assets/icons/rate-active.png'
         },
         {
           pagePath: 'pages/About/index',
-          text: '关于'
+          text: '关于',
+          iconPath: 'assets/icons/about.png',
+          selectedIconPath: 'assets/icons/about-active.png'
         }
       ]
     }
