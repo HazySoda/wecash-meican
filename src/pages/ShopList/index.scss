@@ -1,0 +1,26 @@
+.list {
+  .at-card {
+    margin-top: 20px;
+    &::first-child {
+      margin: 0;
+    }
+    .tags {
+      .at-tag {
+        margin-right: 10px;
+        &::last-child {
+          margin: 0;
+        }
+      }
+    }
+    .rate {
+      .at-rate {
+        display: inline;
+        vertical-align: middle;
+      }
+      .text {
+        margin-left: 5px;
+        vertical-align: middle;
+      }
+    }
+  }
+}
