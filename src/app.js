@@ -18,13 +18,26 @@ class App extends Component {
     pages: [
       'pages/ShopList/index',
       'pages/DishList/index',
-      'pages/DishDetail/index'
+      'pages/DishDetail/index',
+      'pages/Rating/index'
     ],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
       navigationBarTitleText: 'WeChat',
       navigationBarTextStyle: 'black'
+    },
+    tabBar: {
+      list: [
+        {
+          pagePath: 'pages/ShopList/index',
+          text: '首页'
+        },
+        {
+          pagePath: 'pages/Rating/index',
+          text: '排行'
+        }
+      ]
     }
   }
 
