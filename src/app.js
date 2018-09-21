@@ -19,7 +19,8 @@ class App extends Component {
       'pages/ShopList/index',
       'pages/DishList/index',
       'pages/DishDetail/index',
-      'pages/Rating/index'
+      'pages/Rating/index',
+      'pages/About/index'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -36,6 +37,10 @@ class App extends Component {
         {
           pagePath: 'pages/Rating/index',
           text: '排行'
+        },
+        {
+          pagePath: 'pages/About/index',
+          text: '关于'
         }
       ]
     }
