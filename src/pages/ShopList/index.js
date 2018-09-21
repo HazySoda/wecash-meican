@@ -25,11 +25,17 @@ class ShopList extends Component {
     ]
   }
 
+  handleCardClick = (shopId, shopName) => {
+    Taro.navigateTo({
+      url: `../DishList/index?shopId=${shopId}&shopName=${shopName}`
+    })
+  }
+
   componentDidShow () {}
 
   render () {
     return (
-      <View className='list'>
+      <View className='shop-list'>
         <View className='panel'>
           <View className='panel__title'>商家列表</View>
           <View className='panel__content'>
@@ -39,6 +45,7 @@ class ShopList extends Component {
                   key={shop.id}
                   extra={`${shop.count} 件菜品`}
                   title={shop.name}
+                  onClick={this.handleCardClick.bind(this, shop.id, shop.name)}
                 >
                   <View className='at-row at-row__justify--between'>
                     <View className='tags'>
