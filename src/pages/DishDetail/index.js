@@ -111,26 +111,33 @@ class DishDetail extends Component {
           </View>
         </View>
         <AtModal isOpened={this.state.isModalOpened}>
-          <AtModalHeader>评价</AtModalHeader>
-          <AtModalContent>
-            <View class='modal-rate'>
-              <AtRate
-                size={30}
-                margin={20}
-                value={this.state.rate}
-                onChange={this.handleRateChange}
-              />
-            </View>
-            <AtTextarea
-              value={this.state.comment}
-              maxlength='100'
-              placeholder='味道、分量如何...'
-            />
-          </AtModalContent>
-          <AtModalAction>
-            <Button onClick={this.handleModalCancel}>取消</Button>
-            <Button onClick={this.handleModalConfirm}>确定</Button>
-          </AtModalAction>
+          {
+            this.state.isModalOpened &&
+            (
+              <View>
+                <AtModalHeader>评价</AtModalHeader>
+                <AtModalContent>
+                  <View class='modal-rate'>
+                    <AtRate
+                      size={30}
+                      margin={20}
+                      value={this.state.rate}
+                      onChange={this.handleRateChange}
+                    />
+                  </View>
+                  <AtTextarea
+                    value={this.state.comment}
+                    maxlength='100'
+                    placeholder='味道、分量如何...'
+                  />
+                </AtModalContent>
+                <AtModalAction>
+                  <Button onClick={this.handleModalCancel}>取消</Button>
+                  <Button onClick={this.handleModalConfirm}>确定</Button>
+                </AtModalAction>
+              </View>
+            )
+          }
         </AtModal>
       </View>
     )
