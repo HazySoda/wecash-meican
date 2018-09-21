@@ -24,6 +24,12 @@ class DishList extends Component {
     ]
   }
 
+  handleListItemClick = (dishId, dishName) => {
+    Taro.navigateTo({
+      url: `../DishDetail/index?dishId=${dishId}&dishName=${dishName}`
+    })
+  }
+
   componentWillMount () {
     const { shopId, shopName } = this.$router.params
     this.setState({
@@ -43,7 +49,13 @@ class DishList extends Component {
             <AtList>
               {
                 this.state.dishes.map(dish => (
-                  <AtListItem key={dish.id} title={dish.name} arrow='right' extraText={`${dish.rate}分`} />
+                  <AtListItem
+                    key={dish.id}
+                    title={dish.name}
+                    arrow='right'
+                    extraText={`${dish.rate}分`}
+                    onClick={this.handleListItemClick.bind(this, dish.id, dish.name)}
+                  />
                 ))
               }
             </AtList>

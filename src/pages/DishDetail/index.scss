@@ -1,0 +1,29 @@
+.dish-detail {
+  .panel__title {
+    .at-button {
+      vertical-align: middle;
+    }
+  }
+  .at-card {
+    margin-top: 20px;
+    &::first-child {
+      margin: 0;
+    }
+    .at-card-header__thumb {
+      flex: 0 0 60px;
+      height: 60px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+    .comment {
+      margin-top: 20px;
+    }
+  }
+  .at-modal__container {
+    width: 600px;
+    .modal-rate {
+      margin: 0 0 32px;
+      text-align: center;
+    }
+  }
+}
