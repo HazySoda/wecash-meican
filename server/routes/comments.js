@@ -1,4 +1,6 @@
 const Joi = require('joi')
+const Boom = require('boom')
+const sequelize = require('sequelize')
 const { paginationDefine } = require('../utils/router-helper')
 const models = require('../models')
 
@@ -54,6 +56,16 @@ module.exports = [
     },
     handler: async (req, h) => {
       const { userId, userName, userAvatar, dishId, comment, rate } = req.payload
+      // 判断菜品是否存在
+      const dish = await models.dishes.findOne({
+        where: {
+          id: dishId
+        }
+      })
+      if (!dish) {
+        throw Boom.badRequest('菜品不存在')
+      }
+      // 先将本次评价写入
       await models.comments.create({
         user_id: userId,
         user_name: userName,
@@ -61,6 +73,17 @@ module.exports = [
         dish_id: dishId,
         comment,
         rate
+      })
+      // 获取菜品的平均分值
+      const { dataValues: { avgRate } } = await models.comments.findOne({
+        where: {
+          dish_id: dishId
+        },
+        attributes: [[sequelize.fn('AVG', sequelize.col('rate')), 'avgRate']]
+      })
+      // 更新菜品分值
+      await dish.update({
+        rate: parseFloat(avgRate)
       })
       return {
         statusCode: 200,
