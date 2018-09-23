@@ -124,34 +124,48 @@ class DishDetail extends Component {
       })
       return
     }
-    // 检查登录态是否过期
-    Taro.checkSession({
-      fail: () => {
-        const { encryptedData, iv, userInfo } = e.detail
-        Taro.setStorageSync('username', userInfo.nickName)
-        Taro.setStorageSync('avatar', userInfo.avatarUrl)
-        Taro.login({
-          timeout: 3000,
-          success: res => {
-            const code = res.code
-            Taro.request({
-              method: 'POST',
-              url: `${api.HOST_URI}/users/wxLogin`,
-              data: {
-                code,
-                encryptedData,
-                iv
-              },
-              success: tokenRes => {
-                Taro.setStorageSync('uid', tokenRes.data.userId)
-                Taro.setStorageSync('token', tokenRes.data.token)
-              }
-            })
-          }
-        })
+    // 校验现有 Token
+    Taro.request({
+      method: 'GET',
+      url: `${api.HOST_URI}/users/checkToken`,
+      header: {
+        authorization: Taro.getStorageSync('token')
       },
-      complete: () => {
-        this.handleBtnClick()
+      success: res => {
+        if (res.statusCode === 200) {
+          this.handleBtnClick()
+        } else if (res.statusCode === 401) {
+          // 如果校验失败，重新登录并换取 Token
+          const { encryptedData, iv, userInfo } = e.detail
+          Taro.setStorageSync('username', userInfo.nickName)
+          Taro.setStorageSync('avatar', userInfo.avatarUrl)
+          Taro.login({
+            timeout: 3000,
+            success: loginRes => {
+              const code = loginRes.code
+              Taro.request({
+                method: 'POST',
+                url: `${api.HOST_URI}/users/wxLogin`,
+                data: {
+                  code,
+                  encryptedData,
+                  iv
+                },
+                success: tokenRes => {
+                  Taro.setStorageSync('uid', tokenRes.data.userId)
+                  Taro.setStorageSync('token', tokenRes.data.token)
+                  this.handleBtnClick()
+                }
+              })
+            }
+          })
+        }
+      },
+      fail: () => {
+        Taro.showToast({
+          title: '登录失败，请重试',
+          icon: 'none'
+        })
       }
     })
   }
