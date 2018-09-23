@@ -3,13 +3,13 @@ import { View, Text, Button } from '@tarojs/components'
 import {
   AtCard,
   AtRate,
-  AtButton,
   AtModal,
   AtModalHeader,
   AtModalContent,
   AtModalAction,
   AtTextarea
 } from 'taro-ui'
+import api from '../../utils/api'
 import './index.scss'
 
 class DishDetail extends Component {
@@ -20,27 +20,11 @@ class DishDetail extends Component {
   state = {
     dishId: 0,
     dishName: '',
+    shopId: 0,
     isModalOpened: false,
     comment: '',
     rate: 0,
-    detail: [
-      {
-        id: 0,
-        name: '腰花',
-        thumb: 'http://www.logoquan.com/upload/list/20180421/logoquan15259400209.PNG',
-        date: '2018.09.24',
-        rate: 5,
-        comment: '老板两串烤腰子谢谢！！'
-      },
-      {
-        id: 1,
-        name: '土拨鼠',
-        thumb: 'http://www.logoquan.com/upload/list/20180421/logoquan15259400209.PNG',
-        date: '2018.09.24',
-        rate: 4,
-        comment: '啊！！！！！！！！！！'
-      }
-    ]
+    commentList: []
   }
 
   handleBtnClick = () => {
@@ -51,6 +35,12 @@ class DishDetail extends Component {
     })
   }
 
+  handleCommentChange = e => {
+    this.setState({
+      comment: e.target.value
+    })
+  }
+
   handleRateChange = rate => {
     this.setState({
       rate
@@ -58,28 +48,111 @@ class DishDetail extends Component {
   }
 
   handleModalCancel = () => {
-    console.log('cancelled')
     this.setState({
       isModalOpened: false
     })
   }
 
   handleModalConfirm = () => {
-    console.log('confirmed')
-    this.setState({
-      isModalOpened: false
+    this.addComment()
+  }
+
+  getCommentList = async () => {
+    try {
+      Taro.showLoading({
+        title: 'Loading...',
+        mask: true
+      })
+      const res = await Taro.request({
+        method: 'GET',
+        url: `${api.HOST_URI}/comments`,
+        data: {
+          dishId: this.state.dishId
+        }
+      })
+      const commentList = res.data.data
+      this.setState({
+        commentList
+      })
+      Taro.hideLoading()
+    } catch (err) {
+      Taro.hideLoading()
+      Taro.showToast(err.message)
+      console.log(err)
+    }
+  }
+
+  addComment = async () => {
+    try {
+      Taro.showLoading({
+        title: 'Loading...',
+        mask: true
+      })
+      await Taro.request({
+        method: 'POST',
+        url: `${api.HOST_URI}/comments`,
+        data: {
+          userId: Taro.getStorageSync('uid'),
+          userName: Taro.getStorageSync('username'),
+          userAvatar: Taro.getStorageSync('avatar'),
+          shopId: this.state.shopId,
+          dishId: this.state.dishId,
+          comment: this.state.comment,
+          rate: this.state.rate
+        }
+      })
+      this.setState({
+        rate: 0,
+        comment: '',
+        isModalOpened: false
+      })
+      Taro.hideLoading()
+      this.getCommentList()
+    } catch (err) {
+      Taro.hideLoading()
+      Taro.showToast(err.message)
+      console.log(err)
+    }
+  }
+
+  userLogin = (e) => {
+    const { encryptedData, iv, userInfo } = e.detail
+    Taro.setStorageSync('username', userInfo.nickName)
+    Taro.setStorageSync('avatar', userInfo.avatarUrl)
+    Taro.login({
+      timeout: 3000,
+      success: res => {
+        const code = res.code
+        Taro.request({
+          method: 'POST',
+          url: `${api.HOST_URI}/users/wxLogin`,
+          data: {
+            code,
+            encryptedData,
+            iv
+          },
+          success: tokenRes => {
+            Taro.setStorageSync('uid', tokenRes.data.userId)
+            Taro.setStorageSync('token', tokenRes.data.token)
+            this.handleBtnClick()
+          }
+        })
+      }
     })
   }
 
   componentWillMount () {
-    const { dishId, dishName } = this.$router.params
+    const { dishId, dishName, shopId } = this.$router.params
     this.setState(({
       dishId,
-      dishName
+      dishName,
+      shopId
     }))
   }
 
-  componentDidShow () {}
+  componentDidShow () {
+    this.getCommentList()
+  }
 
   render () {
     return (
@@ -87,16 +160,16 @@ class DishDetail extends Component {
         <View className='panel'>
           <View className='panel__title at-row at-row__justify--between at-row__align--center'>
             <Text>{this.state.dishName}</Text>
-            <AtButton type='primary' size='small' circle onClick={this.handleBtnClick}>我来评价</AtButton>
+            <Button className='login-btn' openType='getUserInfo' onGetUserInfo={this.userLogin}>我来评价</Button>
           </View>
           <View className='panel__content'>
             {
-              this.state.detail.map(detail => (
+              this.state.commentList.map(detail => (
                 <AtCard
                   key={detail.id}
                   extra={detail.date}
-                  title={detail.name}
-                  thumb={detail.thumb}
+                  title={detail.user_name}
+                  thumb={detail.user_avatar}
                 >
                   <View className='at-row at-row__align--center'>
                     <Text>评分：</Text>
@@ -129,6 +202,7 @@ class DishDetail extends Component {
                     value={this.state.comment}
                     maxlength='100'
                     placeholder='味道、分量如何...'
+                    onChange={this.handleCommentChange}
                   />
                 </AtModalContent>
                 <AtModalAction>
