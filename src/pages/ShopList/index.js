@@ -1,6 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Text } from '@tarojs/components'
+import { View } from '@tarojs/components'
 import { AtCard, AtTag, AtRate } from "taro-ui"
+import api from '../../utils/api'
 import './index.scss'
 
 class ShopList extends Component {
@@ -9,20 +10,7 @@ class ShopList extends Component {
   }
 
   state = {
-    shopList: [
-      {
-        id: 1,
-        name: '永和大王 (银河SOHO店)',
-        count: 5,
-        rate: 4.5
-      },
-      {
-        id: 2,
-        name: '合利屋 (三元桥店)',
-        count: 7,
-        rate: 4.7
-      }
-    ]
+    shopList: []
   }
 
   handleCardClick = (shopId, shopName) => {
@@ -31,7 +19,31 @@ class ShopList extends Component {
     })
   }
 
-  componentDidShow () {}
+  getShopList = async () => {
+    try {
+      Taro.showLoading({
+        title: 'Loading...',
+        mask: true
+      })
+      const res = await Taro.request({
+        method: 'GET',
+        url: `${api.HOST_URI}/shops`
+      })
+      const shopList = res.data.data
+      this.setState({
+        shopList
+      })
+      Taro.hideLoading()
+    } catch (err) {
+      Taro.hideLoading()
+      Taro.showToast(err.message)
+      console.log(err)
+    }
+  }
+
+  componentDidShow () {
+    this.getShopList()
+  }
 
   render () {
     return (
@@ -43,18 +55,20 @@ class ShopList extends Component {
               this.state.shopList.map(shop => (
                 <AtCard
                   key={shop.id}
-                  extra={`${shop.count} 件菜品`}
+                  extra={`${shop.dishes_count} 件菜品`}
                   title={shop.name}
                   onClick={this.handleCardClick.bind(this, shop.id, shop.name)}
                 >
                   <View className='at-row at-row__justify--between'>
                     <View className='tags'>
                       <AtTag size='small' circle active>午餐</AtTag>
-                      <AtTag size='small' circle active>晚餐</AtTag>
+                      {
+                        shop.type === 2 &&
+                        <AtTag size='small' circle active>晚餐</AtTag>
+                      }
                     </View>
                     <View className='rate'>
                       <AtRate value={shop.rate} />
-                      <Text className='text'>{shop.rate}</Text>
                     </View>
                   </View>
                 </AtCard>
