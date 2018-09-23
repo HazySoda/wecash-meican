@@ -1,6 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { AtList, AtListItem } from "taro-ui"
+import api from '../../utils/api'
 
 class Rating extends Component {
   config = {
@@ -8,68 +9,7 @@ class Rating extends Component {
   }
 
   state = {
-    ratingList: [
-      {
-        id: 1,
-        name: '黑椒牛柳饭',
-        shopName: '永和大王 (银河SOHO店)',
-        rate: 4.1
-      },
-      {
-        id: 2,
-        name: '黑椒牛柳饭',
-        shopName: '永和大王 (银河SOHO店)',
-        rate: 4.2
-      },
-      {
-        id: 3,
-        name: '黑椒牛柳饭',
-        shopName: '永和大王 (银河SOHO店)',
-        rate: 4.3
-      },
-      {
-        id: 4,
-        name: '黑椒牛柳饭',
-        shopName: '永和大王 (银河SOHO店)',
-        rate: 4.4
-      },
-      {
-        id: 5,
-        name: '黑椒牛柳饭',
-        shopName: '永和大王 (银河SOHO店)',
-        rate: 4.5
-      },
-      {
-        id: 6,
-        name: '黑椒牛柳饭',
-        shopName: '永和大王 (银河SOHO店)',
-        rate: 4.6
-      },
-      {
-        id: 7,
-        name: '黑椒牛柳饭',
-        shopName: '永和大王 (银河SOHO店)',
-        rate: 4.7
-      },
-      {
-        id: 8,
-        name: '黑椒牛柳饭',
-        shopName: '永和大王 (银河SOHO店)',
-        rate: 4.8
-      },
-      {
-        id: 9,
-        name: '黑椒牛柳饭',
-        shopName: '永和大王 (银河SOHO店)',
-        rate: 4.9
-      },
-      {
-        id: 10,
-        name: '黑椒牛柳饭',
-        shopName: '永和大王 (银河SOHO店)',
-        rate: 5
-      },
-    ]
+    rankList: []
   }
 
   handleListItemClick = (dishId, dishName) => {
@@ -78,7 +18,31 @@ class Rating extends Component {
     })
   }
 
-  componentDidShow () {}
+  getRankList = async () => {
+    try {
+      Taro.showLoading({
+        title: 'Loading...',
+        mask: true
+      })
+      const res = await Taro.request({
+        method: 'GET',
+        url: `${api.HOST_URI}/dishes/rank`
+      })
+      const rankList = res.data
+      this.setState({
+        rankList
+      })
+      Taro.hideLoading()
+    } catch (err) {
+      Taro.hideLoading()
+      Taro.showToast(err.message)
+      console.log(err)
+    }
+  }
+
+  componentDidShow () {
+    this.getRankList()
+  }
 
   render () {
     return (
@@ -88,11 +52,11 @@ class Rating extends Component {
           <View className='panel__content'>
             <AtList>
               {
-                this.state.ratingList.map((dish, index) => (
+                this.state.rankList.map((dish, index) => (
                   <AtListItem
                     key={dish.id}
                     title={`[No.${index + 1}] ${dish.name}`}
-                    note={dish.shopName}
+                    note={dish.shop_Name}
                     extraText={`${dish.rate}分`}
                     arrow='right'
                     onClick={this.handleListItemClick.bind(this, dish.id, dish.name)}
