@@ -48,6 +48,7 @@ module.exports = [
           userId: Joi.number().integer().min(1).required().description('userID'),
           userName: Joi.string().required().description('userName'),
           userAvatar: Joi.string().required().description('userAvatar'),
+          shopId: Joi.number().integer().min(1).description('shopId'),
           dishId: Joi.number().integer().min(1).description('dishId'),
           comment: Joi.string().required().description('comment'),
           rate: Joi.number().min(0).max(5).required().description('rate')
@@ -55,7 +56,7 @@ module.exports = [
       }
     },
     handler: async (req, h) => {
-      const { userId, userName, userAvatar, dishId, comment, rate } = req.payload
+      const { userId, userName, userAvatar, shopId, dishId, comment, rate } = req.payload
       // 判断菜品是否存在
       const dish = await models.dishes.findOne({
         where: {
@@ -75,7 +76,7 @@ module.exports = [
         rate
       })
       // 获取菜品的平均分值
-      const { dataValues: { avgRate } } = await models.comments.findOne({
+      const dishAvgRate = await models.comments.findOne({
         where: {
           dish_id: dishId
         },
@@ -83,7 +84,22 @@ module.exports = [
       })
       // 更新菜品分值
       await dish.update({
-        rate: parseFloat(avgRate)
+        rate: parseFloat(dishAvgRate.dataValues.avgRate)
+      })
+      // 获取商家的平均分值
+      const shopAvgRate = await models.dishes.findAll({
+        where: {
+          shop_id: shopId
+        },
+        attributes: [[sequelize.fn('AVG', sequelize.col('rate')), 'avgRate']]
+      })
+      // 更新商家分值
+      await models.shops.update({
+        rate: parseFloat(shopAvgRate[0].dataValues.avgRate)
+      }, {
+        where: {
+          id: shopId
+        }
       })
       return {
         statusCode: 200,
