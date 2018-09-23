@@ -22,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
       rate: {
         type: DataTypes.INTEGER,
         allowNull: false
+      },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
       }
     }, { tableName: 'shops' }
   )
