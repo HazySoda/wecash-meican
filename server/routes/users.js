@@ -3,6 +3,7 @@ const Boom = require('boom')
 const JWT = require('jsonwebtoken')
 const axios = require('axios')
 const WXBizDataCrypt = require('../utils/decrypt-data')
+const { jwtAuthDefine } = require('../utils/router-helper')
 const config = require('../config')
 const models = require('../models')
 
@@ -18,7 +19,7 @@ module.exports = [
           userId: jwtInfo.userId,
           exp: +new Date() + (2 * 60 * 60 * 1000)
         }
-        return JWT.sign(payload, config.secrty.JWT)
+        return JWT.sign(payload, config.secret.JWT)
       }
       return generateJWT(request.payload)
     },
@@ -103,6 +104,21 @@ module.exports = [
           iv: Joi.string().required().description('微信用户信息iv')
         }
       }
+    }
+  },
+  {
+    method: 'GET',
+    path: `/${GROUP_NAME}/checkToken`,
+    config: {
+      tags: ['api', GROUP_NAME],
+      description: '验证Token',
+      notes: '验证Token',
+      validate: {
+        ...jwtAuthDefine
+      }
+    },
+    handler: async (req, h) => {
+      return true
     }
   }
 ]
