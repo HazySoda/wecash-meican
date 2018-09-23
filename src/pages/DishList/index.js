@@ -1,6 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { AtList, AtListItem } from 'taro-ui'
+import api from '../../utils/api'
 
 class DishList extends Component {
   config = {
@@ -10,24 +11,38 @@ class DishList extends Component {
   state = {
     shopId: 0,
     shopName: '',
-    dishes: [
-      {
-        id: 1,
-        name: '黑椒牛柳饭',
-        rate: 5
-      },
-      {
-        id: 2,
-        name: '酥嫩鸡排饭',
-        rate: 4.8
-      }
-    ]
+    dishList: []
   }
 
-  handleListItemClick = (dishId, dishName) => {
+  handleListItemClick = (dishId, dishName, shopId) => {
     Taro.navigateTo({
-      url: `../DishDetail/index?dishId=${dishId}&dishName=${dishName}`
+      url: `../DishDetail/index?dishId=${dishId}&dishName=${dishName}&shopId=${shopId}`
     })
+  }
+
+  getDishList = async () => {
+    try {
+      Taro.showLoading({
+        title: 'Loading...',
+        mask: true
+      })
+      const res = await Taro.request({
+        method: 'GET',
+        url: `${api.HOST_URI}/dishes`,
+        data: {
+          shopId: this.state.shopId
+        }
+      })
+      const dishList = res.data.data
+      this.setState({
+        dishList
+      })
+      Taro.hideLoading()
+    } catch (err) {
+      Taro.hideLoading()
+      Taro.showToast(err.message)
+      console.log(err)
+    }
   }
 
   componentWillMount () {
@@ -38,7 +53,9 @@ class DishList extends Component {
     })
   }
 
-  componentDidShow () {}
+  componentDidShow () {
+    this.getDishList()
+  }
 
   render () {
     return (
@@ -48,13 +65,13 @@ class DishList extends Component {
           <View className='panel__content'>
             <AtList>
               {
-                this.state.dishes.map(dish => (
+                this.state.dishList.map(dish => (
                   <AtListItem
                     key={dish.id}
                     title={dish.name}
                     arrow='right'
                     extraText={`${dish.rate}分`}
-                    onClick={this.handleListItemClick.bind(this, dish.id, dish.name)}
+                    onClick={this.handleListItemClick.bind(this, dish.id, dish.name, dish.shop_id)}
                   />
                 ))
               }
