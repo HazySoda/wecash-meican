@@ -115,28 +115,43 @@ class DishDetail extends Component {
     }
   }
 
-  userLogin = (e) => {
-    const { encryptedData, iv, userInfo } = e.detail
-    Taro.setStorageSync('username', userInfo.nickName)
-    Taro.setStorageSync('avatar', userInfo.avatarUrl)
-    Taro.login({
-      timeout: 3000,
-      success: res => {
-        const code = res.code
-        Taro.request({
-          method: 'POST',
-          url: `${api.HOST_URI}/users/wxLogin`,
-          data: {
-            code,
-            encryptedData,
-            iv
-          },
-          success: tokenRes => {
-            Taro.setStorageSync('uid', tokenRes.data.userId)
-            Taro.setStorageSync('token', tokenRes.data.token)
-            this.handleBtnClick()
+  userLogin = e => {
+    // 先判断用户是否点击了拒绝授权
+    if (!e.detail.userInfo) {
+      Taro.showToast({
+        title: '请点击允许授权，否则无法正常使用',
+        icon: 'none'
+      })
+      return
+    }
+    // 检查登录态是否过期
+    Taro.checkSession({
+      fail: () => {
+        const { encryptedData, iv, userInfo } = e.detail
+        Taro.setStorageSync('username', userInfo.nickName)
+        Taro.setStorageSync('avatar', userInfo.avatarUrl)
+        Taro.login({
+          timeout: 3000,
+          success: res => {
+            const code = res.code
+            Taro.request({
+              method: 'POST',
+              url: `${api.HOST_URI}/users/wxLogin`,
+              data: {
+                code,
+                encryptedData,
+                iv
+              },
+              success: tokenRes => {
+                Taro.setStorageSync('uid', tokenRes.data.userId)
+                Taro.setStorageSync('token', tokenRes.data.token)
+              }
+            })
           }
         })
+      },
+      complete: () => {
+        this.handleBtnClick()
       }
     })
   }
