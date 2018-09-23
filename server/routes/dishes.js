@@ -75,5 +75,24 @@ module.exports = [
         }
       }
     }
+  },
+  {
+    method: 'GET',
+    path: `/${GROUP_NAME}/rank`,
+    config: {
+      tags: ['api', GROUP_NAME],
+      description: '获取菜品排行榜',
+      notes: '获取菜品排行榜',
+      auth: false
+    },
+    handler: async (req, h) => {
+      const results = await models.dishes.findAll({
+        order: [
+          ['rate', 'DESC']
+        ],
+        limit: 10
+      })
+      return results
+    }
   }
 ]
