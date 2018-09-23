@@ -23,6 +23,8 @@ module.exports = {
     database: env.MYSQL_DB_NAME
   },
   secret: {
-    JWT: env.JWT_SECRET
+    JWT: env.JWT_SECRET,
+    appId: env.WEAPP_APPID,
+    appSecret: env.WEAPP_SECRET
   }
 }
