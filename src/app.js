@@ -19,8 +19,7 @@ class App extends Component {
       'pages/ShopList/index',
       'pages/DishList/index',
       'pages/DishDetail/index',
-      'pages/Rating/index',
-      'pages/About/index'
+      'pages/Rating/index'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -45,13 +44,13 @@ class App extends Component {
           text: '排行',
           iconPath: 'assets/icons/rate.png',
           selectedIconPath: 'assets/icons/rate-active.png'
-        },
-        {
-          pagePath: 'pages/About/index',
-          text: '关于',
-          iconPath: 'assets/icons/about.png',
-          selectedIconPath: 'assets/icons/about-active.png'
         }
+        // {
+        //   pagePath: 'pages/About/index',
+        //   text: '关于',
+        //   iconPath: 'assets/icons/about.png',
+        //   selectedIconPath: 'assets/icons/about-active.png'
+        // }
       ]
     }
   }
