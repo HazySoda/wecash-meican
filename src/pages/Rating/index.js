@@ -12,9 +12,9 @@ class Rating extends Component {
     rankList: []
   }
 
-  handleListItemClick = (dishId, dishName) => {
+  handleListItemClick = (dishId, dishName, shopId) => {
     Taro.navigateTo({
-      url: `../DishDetail/index?dishId=${dishId}&dishName=${dishName}`
+      url: `../DishDetail/index?dishId=${dishId}&dishName=${dishName}&shopId=${shopId}`
     })
   }
 
@@ -59,7 +59,7 @@ class Rating extends Component {
                     note={dish.shop_Name}
                     extraText={`${dish.rate}分`}
                     arrow='right'
-                    onClick={this.handleListItemClick.bind(this, dish.id, dish.name)}
+                    onClick={this.handleListItemClick.bind(this, dish.id, dish.name, dish.shop_id)}
                   />
                 ))
               }
