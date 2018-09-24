@@ -82,9 +82,10 @@ module.exports = [
         },
         attributes: [[sequelize.fn('AVG', sequelize.col('rate')), 'avgRate']]
       })
+      console.log(dishAvgRate.dataValues.avgRate)
       // 更新菜品分值
       await dish.update({
-        rate: parseFloat(dishAvgRate.dataValues.avgRate)
+        rate: dishAvgRate.dataValues.avgRate
       })
       // 获取商家的平均分值
       const shopAvgRate = await models.dishes.findAll({
@@ -93,9 +94,10 @@ module.exports = [
         },
         attributes: [[sequelize.fn('AVG', sequelize.col('rate')), 'avgRate']]
       })
+      console.log(shopAvgRate[0].dataValues.avgRate)
       // 更新商家分值
       await models.shops.update({
-        rate: parseFloat(shopAvgRate[0].dataValues.avgRate)
+        rate: shopAvgRate[0].dataValues.avgRate
       }, {
         where: {
           id: shopId
