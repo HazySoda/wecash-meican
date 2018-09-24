@@ -66,47 +66,53 @@ module.exports = [
       if (!dish) {
         throw Boom.badRequest('菜品不存在')
       }
-      // 先将本次评价写入
-      await models.comments.create({
-        user_id: userId,
-        user_name: userName,
-        user_avatar: userAvatar,
-        dish_id: dishId,
-        comment,
-        rate
-      })
-      // 获取菜品的平均分值
-      const dishAvgRate = await models.comments.findOne({
-        where: {
-          dish_id: dishId
-        },
-        attributes: [[sequelize.fn('AVG', sequelize.col('rate')), 'avgRate']]
-      })
-      console.log(dishAvgRate.dataValues.avgRate)
-      // 更新菜品分值
-      await dish.update({
-        rate: dishAvgRate.dataValues.avgRate
-      })
-      // 获取商家的平均分值
-      const shopAvgRate = await models.dishes.findAll({
-        where: {
-          shop_id: shopId
-        },
-        attributes: [[sequelize.fn('AVG', sequelize.col('rate')), 'avgRate']]
-      })
-      console.log(shopAvgRate[0].dataValues.avgRate)
-      // 更新商家分值
-      await models.shops.update({
-        rate: shopAvgRate[0].dataValues.avgRate
-      }, {
-        where: {
-          id: shopId
+      let transaction
+      try {
+        transaction = await models.sequelize.transaction()
+        // 先将本次评价写入
+        await models.comments.create({
+          user_id: userId,
+          user_name: userName,
+          user_avatar: userAvatar,
+          dish_id: dishId,
+          comment,
+          rate
+        }, { transaction })
+        // 获取菜品的平均分值
+        const dishAvgRate = await models.comments.findOne({
+          where: {
+            dish_id: dishId
+          },
+          attributes: [[sequelize.fn('AVG', sequelize.col('rate')), 'avgRate']]
+        })
+        // 更新菜品分值
+        await dish.update({
+          rate: dishAvgRate.dataValues.avgRate
+        }, { transaction })
+        // 获取商家的平均分值
+        const shopAvgRate = await models.dishes.findAll({
+          where: {
+            shop_id: shopId
+          },
+          attributes: [[sequelize.fn('AVG', sequelize.col('rate')), 'avgRate']]
+        })
+        // 更新商家分值
+        await models.shops.update({
+          rate: shopAvgRate[0].dataValues.avgRate
+        }, {
+          where: {
+            id: shopId
+          }
+        }, { transaction })
+        await transaction.commit()
+        return {
+          statusCode: 200,
+          error: null,
+          message: '操作成功!'
         }
-      })
-      return {
-        statusCode: 200,
-        error: null,
-        message: '操作成功!'
+      } catch (err) {
+        await transaction.rollback()
+        throw Boom.badImplementation('评价失败，请重试')
       }
     }
   }
