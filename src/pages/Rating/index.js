@@ -54,21 +54,23 @@ class Rating extends Component {
         <View className='panel'>
           <View className='panel__title'>排行榜</View>
           <View className='panel__content'>
-            <AtList>
-              {
-                this.state.rankList.length ?
-                this.state.rankList.map((dish, index) => (
-                  <AtListItem
-                    key={dish.id}
-                    title={`[No.${index + 1}] ${dish.name}`}
-                    note={dish.shop_Name}
-                    extraText={`${dish.rate}分`}
-                    arrow='right'
-                    onClick={this.handleListItemClick.bind(this, dish.id, dish.name, dish.shop_id)}
-                  />
-                )) : <Placeholder />
-              }
-            </AtList>
+            {
+              this.state.rankList.length ?
+              <AtList>
+                {
+                  this.state.rankList.map((dish, index) => (
+                    <AtListItem
+                      key={dish.id}
+                      title={`[No.${index + 1}] ${dish.name}`}
+                      note={dish.shop_Name}
+                      extraText={`${dish.rate}分`}
+                      arrow='right'
+                      onClick={this.handleListItemClick.bind(this, dish.id, dish.name, dish.shop_id)}
+                    />
+                  ))
+                }
+              </AtList> : <Placeholder />
+            }
           </View>
         </View>
       </View>

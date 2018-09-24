@@ -67,20 +67,22 @@ class DishList extends Component {
         <View className='panel'>
           <View className='panel__title'>{this.state.shopName}</View>
           <View className='panel__content'>
-            <AtList>
-              {
-                this.state.dishList.length ?
-                this.state.dishList.map(dish => (
-                  <AtListItem
-                    key={dish.id}
-                    title={dish.name}
-                    arrow='right'
-                    extraText={`${dish.rate}分`}
-                    onClick={this.handleListItemClick.bind(this, dish.id, dish.name, dish.shop_id)}
-                  />
-                )) : <Placeholder />
-              }
-            </AtList>
+            {
+              this.state.dishList.length ?
+              <AtList>
+                {
+                  this.state.dishList.map(dish => (
+                    <AtListItem
+                      key={dish.id}
+                      title={dish.name}
+                      arrow='right'
+                      extraText={`${dish.rate}分`}
+                      onClick={this.handleListItemClick.bind(this, dish.id, dish.name, dish.shop_id)}
+                    />
+                  ))
+                }
+              </AtList> : <Placeholder />
+            }
           </View>
         </View>
       </View>
