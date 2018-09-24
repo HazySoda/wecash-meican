@@ -10,7 +10,8 @@ const mysqlConfig = {
   ...config.mysql,
   define: {
     underscored: true
-  }
+  },
+  operatorsAliases: false
 }
 
 let sequelize = new Sequelize(mysqlConfig.database, mysqlConfig.username, mysqlConfig.password, mysqlConfig)

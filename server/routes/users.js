@@ -13,7 +13,7 @@ module.exports = [
   {
     method: 'POST',
     path: `/${GROUP_NAME}/createJWT`,
-    handler: async (request, h) => {
+    handler: async (req, h) => {
       const generateJWT = jwtInfo => {
         const payload = {
           userId: jwtInfo.userId,
@@ -21,7 +21,7 @@ module.exports = [
         }
         return JWT.sign(payload, config.secret.JWT)
       }
-      return generateJWT(request.payload)
+      return generateJWT(req.payload)
     },
     config: {
       tags: ['api', GROUP_NAME],
@@ -38,11 +38,11 @@ module.exports = [
   {
     method: 'POST',
     path: `/${GROUP_NAME}/wxLogin`,
-    handler: async (request, h) => {
+    handler: async (req, h) => {
       try {
         const appid = config.secret.appId // 你的小程序 appid
         const secret = config.secret.appSecret // 你的小程序 appsecret
-        const { code, encryptedData, iv } = request.payload
+        const { code, encryptedData, iv } = req.payload
         const res = await axios({
           url: 'https://api.weixin.qq.com/sns/jscode2session',
           method: 'GET',
