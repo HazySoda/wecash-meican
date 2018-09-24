@@ -24,6 +24,7 @@ class DishDetail extends Component {
     isModalOpened: false,
     comment: '',
     rate: 0,
+    userInfo: {},
     commentList: []
   }
 
@@ -93,8 +94,8 @@ class DishDetail extends Component {
         url: `${api.HOST_URI}/comments`,
         data: {
           userId: Taro.getStorageSync('uid'),
-          userName: Taro.getStorageSync('username'),
-          userAvatar: Taro.getStorageSync('avatar'),
+          userName: this.state.userInfo.nickName || Taro.getStorageSync('username'),
+          userAvatar: this.state.userInfo.avatarUrl || Taro.getStorageSync('avatar'),
           shopId: this.state.shopId,
           dishId: this.state.dishId,
           comment: this.state.comment,
@@ -124,6 +125,13 @@ class DishDetail extends Component {
       })
       return
     }
+    // 缓存 userInfo
+    const { encryptedData, iv, userInfo } = e.detail
+    Taro.setStorageSync('username', userInfo.nickName)
+    Taro.setStorageSync('avatar', userInfo.avatarUrl)
+    this.setState({
+      userInfo
+    })
     // 校验现有 Token
     Taro.request({
       method: 'GET',
@@ -136,9 +144,6 @@ class DishDetail extends Component {
           this.handleBtnClick()
         } else if (res.statusCode === 401) {
           // 如果校验失败，重新登录并换取 Token
-          const { encryptedData, iv, userInfo } = e.detail
-          Taro.setStorageSync('username', userInfo.nickName)
-          Taro.setStorageSync('avatar', userInfo.avatarUrl)
           Taro.login({
             timeout: 3000,
             success: loginRes => {
