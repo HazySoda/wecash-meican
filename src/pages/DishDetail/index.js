@@ -84,6 +84,19 @@ class DishDetail extends Component {
   }
 
   addComment = async () => {
+    if (!this.state.rate) {
+      Taro.showToast({
+        title: '请选择评分',
+        icon: 'none'
+      })
+      return
+    } else if (!this.state.comment) {
+      Taro.showToast({
+        title: '请填写评价',
+        icon: 'none'
+      })
+      return
+    }
     try {
       Taro.showLoading({
         title: 'Loading...',
