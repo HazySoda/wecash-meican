@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false
       },
       rate: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DECIMAL,
         allowNull: false
       },
       isActive: {

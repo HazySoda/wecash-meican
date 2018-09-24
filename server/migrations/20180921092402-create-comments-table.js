@@ -31,7 +31,7 @@ module.exports = {
           allowNull: false
         },
         rate: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.DECIMAL,
           allowNull: false
         },
         created_at: Sequelize.DATE,
