@@ -29,7 +29,10 @@ module.exports = [
         offset: (currentPage - 1) * pageSize,
         where: {
           dish_id: dishId
-        }
+        },
+        order: [
+          ['id', 'DESC']
+        ]
       })
       req.total = total
       return results
