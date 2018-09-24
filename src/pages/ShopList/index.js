@@ -3,6 +3,7 @@ import { View } from '@tarojs/components'
 import { AtCard, AtTag, AtRate } from "taro-ui"
 import api from '../../utils/api'
 import './index.scss'
+import Placeholder from '../../components/Placeholder'
 
 class ShopList extends Component {
   config = {
@@ -36,7 +37,10 @@ class ShopList extends Component {
       Taro.hideLoading()
     } catch (err) {
       Taro.hideLoading()
-      Taro.showToast(err.message)
+      Taro.showToast({
+        title: err.message,
+        icon: 'none'
+      })
       console.log(err)
     }
   }
@@ -52,6 +56,7 @@ class ShopList extends Component {
           <View className='panel__title'>商家列表</View>
           <View className='panel__content'>
             {
+              this.state.shopList.length ?
               this.state.shopList.map(shop => (
                 <AtCard
                   key={shop.id}
@@ -72,7 +77,7 @@ class ShopList extends Component {
                     </View>
                   </View>
                 </AtCard>
-              ))
+              )) : <Placeholder />
             }
           </View>
         </View>

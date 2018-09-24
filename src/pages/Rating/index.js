@@ -2,6 +2,7 @@ import Taro, { Component } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { AtList, AtListItem } from "taro-ui"
 import api from '../../utils/api'
+import Placeholder from '../../components/Placeholder'
 
 class Rating extends Component {
   config = {
@@ -35,7 +36,10 @@ class Rating extends Component {
       Taro.hideLoading()
     } catch (err) {
       Taro.hideLoading()
-      Taro.showToast(err.message)
+      Taro.showToast({
+        title: err.message,
+        icon: 'none'
+      })
       console.log(err)
     }
   }
@@ -52,6 +56,7 @@ class Rating extends Component {
           <View className='panel__content'>
             <AtList>
               {
+                this.state.rankList.length ?
                 this.state.rankList.map((dish, index) => (
                   <AtListItem
                     key={dish.id}
@@ -61,7 +66,7 @@ class Rating extends Component {
                     arrow='right'
                     onClick={this.handleListItemClick.bind(this, dish.id, dish.name, dish.shop_id)}
                   />
-                ))
+                )) : <Placeholder />
               }
             </AtList>
           </View>

@@ -11,6 +11,8 @@ import {
 } from 'taro-ui'
 import api from '../../utils/api'
 import './index.scss'
+import Placeholder from '../../components/Placeholder'
+
 
 class DishDetail extends Component {
   config = {
@@ -78,7 +80,10 @@ class DishDetail extends Component {
       Taro.hideLoading()
     } catch (err) {
       Taro.hideLoading()
-      Taro.showToast(err.message)
+      Taro.showToast({
+        title: err.message,
+        icon: 'none'
+      })
       console.log(err)
     }
   }
@@ -124,7 +129,10 @@ class DishDetail extends Component {
       this.getCommentList()
     } catch (err) {
       Taro.hideLoading()
-      Taro.showToast(err.message)
+      Taro.showToast({
+        title: err.message,
+        icon: 'none'
+      })
       console.log(err)
     }
   }
@@ -211,6 +219,7 @@ class DishDetail extends Component {
           </View>
           <View className='panel__content'>
             {
+              this.state.commentList.length ?
               this.state.commentList.map(detail => (
                 <AtCard
                   key={detail.id}
@@ -226,7 +235,7 @@ class DishDetail extends Component {
                     {detail.comment}
                   </View>
                 </AtCard>
-              ))
+              )) : <Placeholder />
             }
           </View>
         </View>
