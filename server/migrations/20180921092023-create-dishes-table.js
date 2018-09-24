@@ -23,7 +23,7 @@ module.exports = {
           allowNull: false
         },
         rate: {
-          type: Sequelize.DECIMAL,
+          type: Sequelize.DECIMAL(2, 1),
           allowNull: false
         },
         isActive: {
