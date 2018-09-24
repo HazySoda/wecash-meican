@@ -68,7 +68,7 @@ class ShopList extends Component {
                       }
                     </View>
                     <View className='rate'>
-                      <AtRate value={shop.rate} />
+                      <AtRate value={parseFloat(shop.rate)} />
                     </View>
                   </View>
                 </AtCard>

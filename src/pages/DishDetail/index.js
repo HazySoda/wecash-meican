@@ -207,7 +207,7 @@ class DishDetail extends Component {
                 >
                   <View className='at-row at-row__align--center'>
                     <Text>评分：</Text>
-                    <AtRate value={detail.rate} />
+                    <AtRate value={parseFloat(detail.rate)} />
                   </View>
                   <View className='comment'>
                     {detail.comment}
