@@ -196,7 +196,7 @@ class DishDetail extends Component {
               this.state.commentList.map(detail => (
                 <AtCard
                   key={detail.id}
-                  extra={detail.date}
+                  extra={detail.created_at.substring(0, 10)}
                   title={detail.user_name}
                   thumb={detail.user_avatar}
                 >
