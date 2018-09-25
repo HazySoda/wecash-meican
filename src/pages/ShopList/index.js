@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View } from '@tarojs/components'
+import { View, Text } from '@tarojs/components'
 import { AtCard, AtTag, AtRate } from "taro-ui"
 import api from '../../utils/api'
 import './index.scss'
@@ -74,6 +74,7 @@ class ShopList extends Component {
                     </View>
                     <View className='rate'>
                       <AtRate value={parseFloat(shop.rate)} />
+                      <Text className='text'>{parseFloat(shop.rate)}</Text>
                     </View>
                   </View>
                 </AtCard>
