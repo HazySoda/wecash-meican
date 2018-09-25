@@ -8,7 +8,7 @@ class About extends Component {
   }
 
   state = {
-    imgUrl: 'https://wow-static-1253920996.cos.ap-beijing.myqcloud.com/images/wechat-pay.jpeg?q-sign-algorithm=sha1&q-ak=AKIDzBR3FdqZ36yUD87s0ei1zxSF3R063WQV&q-sign-time=1537864118;1537865918&q-key-time=1537864118;1537865918&q-header-list=&q-url-param-list=&q-signature=d46511f013cb0e8ceb4fff4cb2dece2a20b99112&x-cos-security-token=275c09348698fc6db82f3ef88c36b2cf5c0b1e9710001&response-content-disposition=attachment'
+    imgUrl: 'https://wow-static-1253920996.cos.ap-beijing.myqcloud.com/images/wechat-pay.jpeg'
   }
 
   handleImageClick = () => {
