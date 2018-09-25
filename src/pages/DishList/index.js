@@ -34,15 +34,22 @@ class DishList extends Component {
           shopId: this.state.shopId
         }
       })
+      Taro.hideLoading()
+      if (res.statusCode !== 200) {
+        Taro.showToast({
+          title: res.data.message || '服务器繁忙，请稍后再试',
+          icon: 'none'
+        })
+        return
+      }
       const dishList = res.data.data
       this.setState({
         dishList
       })
-      Taro.hideLoading()
     } catch (err) {
       Taro.hideLoading()
       Taro.showToast({
-        title: err.message,
+        title: '连接服务器失败',
         icon: 'none'
       })
       console.log(err)

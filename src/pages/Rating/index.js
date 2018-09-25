@@ -29,15 +29,22 @@ class Rating extends Component {
         method: 'GET',
         url: `${api.HOST_URI}/dishes/rank`
       })
+      Taro.hideLoading()
+      if (res.statusCode !== 200) {
+        Taro.showToast({
+          title: res.data.message || '服务器繁忙，请稍后再试',
+          icon: 'none'
+        })
+        return
+      }
       const rankList = res.data
       this.setState({
         rankList
       })
-      Taro.hideLoading()
     } catch (err) {
       Taro.hideLoading()
       Taro.showToast({
-        title: err.message,
+        title: '连接服务器失败',
         icon: 'none'
       })
       console.log(err)

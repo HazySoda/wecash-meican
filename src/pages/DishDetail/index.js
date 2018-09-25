@@ -73,15 +73,22 @@ class DishDetail extends Component {
           dishId: this.state.dishId
         }
       })
+      Taro.hideLoading()
+      if (res.statusCode !== 200) {
+        Taro.showToast({
+          title: res.data.message || '服务器繁忙，请稍后再试',
+          icon: 'none'
+        })
+        return
+      }
       const commentList = res.data.data
       this.setState({
         commentList
       })
-      Taro.hideLoading()
     } catch (err) {
       Taro.hideLoading()
       Taro.showToast({
-        title: err.message,
+        title: '连接服务器失败',
         icon: 'none'
       })
       console.log(err)
@@ -107,7 +114,7 @@ class DishDetail extends Component {
         title: 'Loading...',
         mask: true
       })
-      await Taro.request({
+      const res = await Taro.request({
         method: 'POST',
         url: `${api.HOST_URI}/comments`,
         data: {
@@ -120,17 +127,24 @@ class DishDetail extends Component {
           rate: this.state.rate
         }
       })
+      Taro.hideLoading()
+      if (res.statusCode !== 200) {
+        Taro.showToast({
+          title: res.data.message || '服务器繁忙，请稍后再试',
+          icon: 'none'
+        })
+        return
+      }
       this.setState({
         rate: 0,
         comment: '',
         isModalOpened: false
       })
-      Taro.hideLoading()
       this.getCommentList()
     } catch (err) {
       Taro.hideLoading()
       Taro.showToast({
-        title: err.message,
+        title: '连接服务器失败',
         icon: 'none'
       })
       console.log(err)
