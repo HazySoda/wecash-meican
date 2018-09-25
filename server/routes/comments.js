@@ -90,7 +90,7 @@ module.exports = [
         })
         // 更新菜品分值
         await dish.update({
-          rate: dishAvgRate.dataValues.avgRate
+          rate: dishAvgRate.dataValues.avgRate || rate
         }, { transaction })
         // 获取商家的平均分值
         const shopAvgRate = await models.dishes.findAll({
@@ -101,7 +101,7 @@ module.exports = [
         })
         // 更新商家分值
         await models.shops.update({
-          rate: shopAvgRate[0].dataValues.avgRate
+          rate: shopAvgRate[0].dataValues.avgRate || rate
         }, {
           where: {
             id: shopId
@@ -114,8 +114,8 @@ module.exports = [
           message: '操作成功!'
         }
       } catch (err) {
-        await transaction.rollback()
         throw Boom.badImplementation('评价失败，请重试')
+        // await transaction.rollback()
       }
     }
   }
