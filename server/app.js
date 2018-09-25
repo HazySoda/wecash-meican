@@ -7,7 +7,10 @@ const pluginHapiAuthJWT2 = require('./plugins/hapi-auth-jwt2')
 
 const server = Hapi.server({
   host: config.host,
-  port: config.port
+  port: config.port,
+  routes: {
+    cors: true
+  }
 })
 
 // 在开发环境下返回 Joi 校验的详细错误信息
