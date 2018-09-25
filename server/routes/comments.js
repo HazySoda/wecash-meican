@@ -1,5 +1,7 @@
 const Joi = require('joi')
 const Boom = require('boom')
+const axios = require('axios')
+const config = require('../config')
 const sequelize = require('sequelize')
 const { paginationDefine } = require('../utils/router-helper')
 const models = require('../models')
@@ -60,6 +62,27 @@ module.exports = [
     },
     handler: async (req, h) => {
       const { userId, userName, userAvatar, shopId, dishId, comment, rate } = req.payload
+      // 获取 accessToken
+      const accessTokenRes = await axios.get('https://api.weixin.qq.com/cgi-bin/token', {
+        params: {
+          grant_type: 'client_credential',
+          APPID: config.secret.appId,
+          secret: config.secret.appSecret
+        }
+      })
+      const accessToken = accessTokenRes.data.access_token
+      // 判断内容是否含有敏感词
+      const msgCheckRes = await axios.post('https://api.weixin.qq.com/wxa/msg_sec_check', {
+        content: comment
+      }, {
+        params: {
+          access_token: accessToken
+        }
+      })
+      const checkCode = msgCheckRes.data.errcode
+      if (checkCode === 87014) {
+        return Boom.badRequest('内容含有敏感词')
+      }
       // 判断菜品是否存在
       const dish = await models.dishes.findOne({
         where: {
