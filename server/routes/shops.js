@@ -23,7 +23,10 @@ module.exports = [
       const { currentPage, pageSize } = req.query
       const { rows: results, count: total } = await models.shops.findAndCountAll({
         limit: pageSize,
-        offset: (currentPage - 1) * pageSize
+        offset: (currentPage - 1) * pageSize,
+        order: [
+          ['rate', 'DESC']
+        ]
       })
       req.total = total
       return results

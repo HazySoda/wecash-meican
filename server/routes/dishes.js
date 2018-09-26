@@ -28,7 +28,10 @@ module.exports = [
         offset: (currentPage - 1) * pageSize,
         where: {
           shop_id: shopId
-        }
+        },
+        order: [
+          ['rate', 'DESC']
+        ]
       })
       req.total = total
       return results
