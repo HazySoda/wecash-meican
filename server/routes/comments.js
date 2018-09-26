@@ -61,41 +61,39 @@ module.exports = [
       }
     },
     handler: async (req, h) => {
-      const { userId, userName, userAvatar, shopId, dishId, comment, rate } = req.payload
-      // 获取 accessToken
-      const accessTokenRes = await axios.get('https://api.weixin.qq.com/cgi-bin/token', {
-        params: {
-          grant_type: 'client_credential',
-          APPID: config.secret.appId,
-          secret: config.secret.appSecret
-        }
-      })
-      const accessToken = accessTokenRes.data.access_token
-      // 判断内容是否含有敏感词
-      const msgCheckRes = await axios.post('https://api.weixin.qq.com/wxa/msg_sec_check', {
-        content: comment
-      }, {
-        params: {
-          access_token: accessToken
-        }
-      })
-      const checkCode = msgCheckRes.data.errcode
-      if (checkCode === 87014) {
-        return Boom.badRequest('内容含有敏感词')
-      }
-      // 判断菜品是否存在
-      const dish = await models.dishes.findOne({
-        where: {
-          id: dishId
-        }
-      })
-      if (!dish) {
-        throw Boom.badRequest('菜品不存在')
-      }
-      let transaction
       try {
-        transaction = await models.sequelize.transaction()
-        // 先将本次评价写入
+        const { userId, userName, userAvatar, shopId, dishId, comment, rate } = req.payload
+        // 获取 accessToken
+        const accessTokenRes = await axios.get('https://api.weixin.qq.com/cgi-bin/token', {
+          params: {
+            grant_type: 'client_credential',
+            APPID: config.secret.appId,
+            secret: config.secret.appSecret
+          }
+        })
+        const accessToken = accessTokenRes.data.access_token
+        // 判断内容是否含有敏感词
+        const msgCheckRes = await axios.post('https://api.weixin.qq.com/wxa/msg_sec_check', {
+          content: comment
+        }, {
+          params: {
+            access_token: accessToken
+          }
+        })
+        const checkCode = msgCheckRes.data.errcode
+        if (checkCode === 87014) {
+          return Boom.badRequest('内容含有敏感词')
+        }
+        // 判断菜品是否存在
+        const dish = await models.dishes.findOne({
+          where: {
+            id: dishId
+          }
+        })
+        if (!dish) {
+          throw Boom.badRequest('菜品不存在')
+        }
+        // 将本次评价写入
         await models.comments.create({
           user_id: userId,
           user_name: userName,
@@ -103,9 +101,9 @@ module.exports = [
           dish_id: dishId,
           comment,
           rate
-        }, { transaction })
+        })
         // 获取菜品的平均分值
-        const dishAvgRate = await models.comments.findOne({
+        const dishAvgRate = await models.comments.findAll({
           where: {
             dish_id: dishId
           },
@@ -113,32 +111,34 @@ module.exports = [
         })
         // 更新菜品分值
         await dish.update({
-          rate: dishAvgRate.dataValues.avgRate || rate
-        }, { transaction })
+          rate: dishAvgRate[0].dataValues.avgRate > 0 ? dishAvgRate[0].dataValues.avgRate : rate
+        })
         // 获取商家的平均分值
         const shopAvgRate = await models.dishes.findAll({
           where: {
-            shop_id: shopId
+            shop_id: shopId,
+            rate: {
+              [models.sequelize.Op.gt]: 0
+            }
           },
           attributes: [[sequelize.fn('AVG', sequelize.col('rate')), 'avgRate']]
         })
         // 更新商家分值
         await models.shops.update({
-          rate: shopAvgRate[0].dataValues.avgRate || rate
+          rate: shopAvgRate[0].dataValues.avgRate > 0 ? shopAvgRate[0].dataValues.avgRate : rate
         }, {
           where: {
             id: shopId
           }
-        }, { transaction })
-        await transaction.commit()
+        })
         return {
           statusCode: 200,
           error: null,
           message: '操作成功!'
         }
       } catch (err) {
+        console.log(err)
         throw Boom.badImplementation('评价失败，请重试')
-        // await transaction.rollback()
       }
     }
   }
