@@ -1,5 +1,5 @@
 const config = {
-  projectName: 'we',
+  projectName: 'wecash-meican',
   date: '2018-9-20',
   designWidth: 750,
   sourceRoot: 'src',
