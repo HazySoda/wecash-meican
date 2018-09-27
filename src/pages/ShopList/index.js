@@ -73,11 +73,8 @@ class ShopList extends Component {
                 >
                   <View className='at-row at-row__justify--between'>
                     <View className='tags'>
-                      <AtTag size='small' circle active>午餐</AtTag>
-                      {
-                        shop.type === 2 &&
-                        <AtTag size='small' circle active>晚餐</AtTag>
-                      }
+                      { shop.type === 1 && <AtTag size='small' circle active>午餐</AtTag> }
+                      { shop.type === 2 && <AtTag size='small' circle active>晚餐</AtTag> }
                     </View>
                     <View className='rate'>
                       <AtRate value={parseFloat(shop.rate)} />
