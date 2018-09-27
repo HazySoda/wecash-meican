@@ -269,6 +269,7 @@ class DishDetail extends Component {
                     />
                   </View>
                   <AtTextarea
+                    fixed
                     value={this.state.comment}
                     maxlength='100'
                     placeholder='味道、分量如何...'
